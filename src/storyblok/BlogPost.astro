@@ -1,13 +1,84 @@
 ---
 import { storyblokEditable, renderRichText } from "@storyblok/astro";
-
+import Layout from "../layouts/Layout.astro";
+import Header from "../layouts/Header.astro";
+import cloneDeep from "lodash.clonedeep";
+import { RichTextSchema } from "@storyblok/js";
+import { default as TOC, Heading } from "../components/TOC.astro";
 
 const { blok } = Astro.props;
-const content = renderRichText(blok.content);
+
+const headings: Array<Heading> = [];
+
+const mySchema = cloneDeep(RichTextSchema);
+
+mySchema.nodes.heading = function (node: any) {
+  const depth = node.attrs.level;
+  let text = node.content
+    .filter((x: any) => x.type == "text")
+    .map((x: any) => x.text)
+    .join(" ");
+
+  let id = node.content
+    .filter((x: any) => x.type == "text")
+    .map((x: any) => x.text.match(/[a-zA-Z0-9\s]+/g).join(""))
+    .join("")
+    .toLowerCase()
+    .replaceAll(" ", "-");
+
+  node.content.unshift({ type: "text", text: " " });
+  node.content.unshift({
+    type: "text",
+    text: "λ",
+    marks: [{ type: "link", attrs: { href: "#" + id } }],
+  });
+
+  headings.push({ id: id, text: text, depth: depth });
+
+  return {
+    tag: [
+      {
+        tag: `h${node.attrs.level}`,
+        attrs: { id: id },
+      },
+    ],
+  };
+};
+const content = renderRichText(blok.content, { schema: mySchema });
 ---
 
-<article class="prose" {...storyblokEditable(blok)}>
-  <h1>{blok.title}</h1>
-  <p>{blok.description}</p>
-  <Fragment set:html={content} />
-</article>
+<Layout title={blok.title}>
+  <Header />
+  <div class="mx-auto flex w-full max-w-3xl justify-start px-2">
+    <button
+      class="focus-outline mt-8 mb-2 flex hover:opacity-75"
+      onclick="history.back()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg"
+        ><path
+          d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"
+        ></path>
+      </svg><span>Go back</span>
+    </button>
+  </div>
+  <main id="main-content">
+    <article class="prose" {...storyblokEditable(blok)}>
+      <h1>{blok.title}</h1>
+      <p>{blok.description}</p>
+      <TOC headings={headings} />
+      <Fragment set:html={content} />
+    </article>
+  </main>
+</Layout>
+
+<style>
+  main {
+    @apply mx-auto w-full max-w-3xl px-4 pb-12;
+  }
+  .post-title {
+    @apply text-2xl font-semibold text-skin-accent;
+  }
+  .tags-container {
+    @apply my-8;
+  }
+</style>

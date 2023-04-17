@@ -1,0 +1,79 @@
+---
+
+export interface Heading {
+  id: string;
+  text: string;
+  depth: number;
+}
+
+interface HeadingNode {
+  id: string;
+  text: string;
+  nested: HeadingNode[];
+}
+
+export interface Props {
+  headings: Array<Heading>;
+}
+
+
+const { headings } = Astro.props;
+
+function buildHeadingTree(headings: Heading[]): HeadingNode[] {
+  const baseDepth: number = Math.min(...headings.map((x) => x.depth));
+  const result: HeadingNode[] = [];
+  const nodesById: { [id: string]: HeadingNode } = {};
+
+  // Create a HeadingNode for each Heading and store it in nodesById
+  headings.forEach((heading) => {
+    const node: HeadingNode = {
+      id: heading.id,
+      text: heading.text,
+      nested: [],
+    };
+    nodesById[heading.id] = node;
+  });
+
+  // Attach each node to its parent in the tree
+  headings.forEach((heading, index) => {
+    const node = nodesById[heading.id];
+    if (heading.depth === baseDepth) {
+      result.push(node);
+    } else {
+      const parent =
+        nodesById[
+          headings
+            .slice(0, index)
+            .reverse()
+            .find((h) => h.depth === heading.depth - 1)?.id || ""
+        ];
+      if (parent) {
+        parent.nested.push(node);
+      }
+    }
+  });
+
+  return result;
+}
+---
+
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+  {
+    (() => {
+      const renderTableOfContents = (heading: HeadingNode) => {
+        return (
+          <>
+            <li>
+              <a href={"#" + heading.id}>{heading.text}</a>
+            </li>
+            {heading.nested.length > 0 && (
+              <ul>{heading.nested.map(renderTableOfContents)}</ul>
+            )}
+          </>
+        );
+      };
+      return buildHeadingTree(headings).map(renderTableOfContents);
+    })()
+  }
+</ul>

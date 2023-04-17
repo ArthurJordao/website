@@ -10,7 +10,7 @@ function withOpacity(variableName) {
 }
 
 module.exports = {
-  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
     // Remove the following screen breakpoint or add other breakpoints
     // if one breakpoint is not enough for you
@@ -60,5 +60,6 @@ module.exports = {
     fontFamily: {
       mono: ["IBM Plex Mono", "monospace"],
     },
-  }, plugins: [require("@tailwindcss/typography")],
+  },
+  plugins: [require("@tailwindcss/typography")],
 };
