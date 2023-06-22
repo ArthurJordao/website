@@ -5,3 +5,9 @@ import { storyblokEditable } from "@storyblok/astro";
 const { blok } = Astro.props;
 ---
 <a {...storyblokEditable(blok)} title={blok.title} href={blok.url}><Icon name={blok.name}></Icon></a>
+
+<style>
+a {
+  @apply mr-2
+}
+</style>
