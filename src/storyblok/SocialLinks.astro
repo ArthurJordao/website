@@ -1,0 +1,15 @@
+---
+import StoryblokComponent from "@storyblok/astro/StoryblokComponent.astro";
+import { storyblokEditable } from "@storyblok/astro";
+
+const { blok } = Astro.props;
+---
+<div class="social-links" {...storyblokEditable(blok)}>
+  {blok.links.map((link:any) => <StoryblokComponent blok={link} /> )}
+</div>
+
+<style>
+  .social-links {
+    @apply mr-2 mb-1 whitespace-nowrap sm:mb-0 text-2xl;
+  }
+</style>

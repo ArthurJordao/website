@@ -1,10 +1,12 @@
 ---
-import { storyblokEditable, renderRichText } from "@storyblok/astro";
+import { storyblokEditable } from "@storyblok/astro";
 import StoryblokComponent from "@storyblok/astro/StoryblokComponent.astro";
+import RichTextRenderer from "@storyblok/astro/RichTextRenderer.astro";
 import Header from "../layouts/Header.astro";
-
 import Hr from "../components/Hr.astro";
+
 const { blok } = Astro.props;
+console.log(JSON.stringify(blok.intro))
 ---
 
 <Header />
@@ -27,7 +29,7 @@ const { blok } = Astro.props;
         </svg>
       </a>
 
-    <article class="prose"><Fragment set:html={renderRichText(blok.intro)} /></article>
+    <article class="prose"><RichTextRenderer richTextData={blok.intro}/></article>
     </section>
     <Hr />
     <section id="recent-posts">
@@ -57,13 +59,6 @@ const { blok } = Astro.props;
   #hero p {
     @apply my-2;
   }
-  .social-wrapper {
-    @apply mt-4 flex flex-col sm:flex-row sm:items-center;
-  }
-  .social-links {
-    @apply mr-2 mb-1 whitespace-nowrap sm:mb-0;
-  }
-
   #recent-posts {
     @apply pt-12 pb-6;
   }

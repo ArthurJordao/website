@@ -20,6 +20,8 @@ export default defineConfig({
         blogPost: 'storyblok/BlogPost',
         blogPostList: 'storyblok/BlogPostList',
         homePage: 'storyblok/HomePage',
+        socialLink: 'storyblok/SocialLink',
+        socialLinks: 'storyblok/SocialLinks',
       },
       apiOptions: {
         region: 'us'
